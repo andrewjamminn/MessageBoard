@@ -1,5 +1,5 @@
 {
-  "name": "custom-drink-maker",
+  "name": "forum-term-project",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -26,5 +26,6 @@
     "typescript": "^5.2.2",
     "vite": "^6.2.3",
     "vue-tsc": "^2.2.8"
+    
   }
 }
