@@ -12,7 +12,8 @@
   "dependencies": {
     "pinia": "^3.0.1",
     "pinia-plugin-persistedstate": "^4.2.0",
-    "vue": "^3.4.19"
+    "vue": "^3.4.19",
+    "vue3-google-login": "^2.0.33"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
@@ -26,6 +27,5 @@
     "typescript": "^5.2.2",
     "vite": "^6.2.3",
     "vue-tsc": "^2.2.8"
-    
   }
 }
