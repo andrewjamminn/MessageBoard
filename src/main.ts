@@ -13,9 +13,4 @@ pinia.use(piniaPluginPersistedstate)
 // Use pinia instance and mount the app
 const app = createApp(App)
   app.use(pinia)
-  /* NOT FULLY IMPLEMENTED YET
-  app.use(vue3GoogleLogin, {
-    clientId: 'YOUR_GOOGLE_CLIENT_ID'
-  })
-    */
   app.mount('#app')
