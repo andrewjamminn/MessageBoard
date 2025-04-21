@@ -138,6 +138,11 @@ export const useStore = defineStore("Forum", {
                 }
             }
         },
+
+        async logOut() {
+            this.currentUser = null; // Clear the current user
+            console.log("User logged out successfully.");
+        },
         
         async updateUserFavColor(color: string) {
             if (this.currentUser) {

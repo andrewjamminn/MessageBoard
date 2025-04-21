@@ -20,6 +20,7 @@
 <!--otherwise-->
 <div v-else>
     {{ store.currentUser.username }} is signed in!
+    <button @click="logOut">Log out!</button>
     <body class="favcolor" v-if="store.currentUser.favcolor===undefined">
         <!--site bullies you into choosing your favorite color-->
         You haven't chosen a favorite color yet! <br>
@@ -34,7 +35,7 @@
 </div>
 
 <div v-if="store.currentUser">
-    Signed in User's posts appear in this column
+    Signed in. User's posts appear in this column.
 </div>
 
 </template>
@@ -82,6 +83,11 @@ const signUp = async () => {
         errorMsg.value = "Couldn't create new user -- password was empty or username already exists";
     }
 }
+
+// Log out function
+const logOut = () => {
+  store.logOut();
+};
 
 // Function to update favorite color
 const updateFavColor = async () => {
