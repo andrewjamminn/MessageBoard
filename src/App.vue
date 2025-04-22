@@ -5,9 +5,12 @@
   <div id="parent" :class="bgColorClass">
     <div id="feed">
       <!-- iterate through post collection backwards, show most recent first-->
-      Feed goes here
+      <ul> 
+        <li v-for="i in store.posts.length" :key="i">
+          <Post :post="store.posts[store.posts.length-i]" :comments="store.posts[store.posts.length-i].comments" />
+        </li>
+      </ul>
     </div> 
-    
     <div id="user">
       <UserTab />
     </div>
@@ -16,6 +19,7 @@
 <script setup lang="ts">
   import UserTab from "./components/UserTab.vue"
   import NewPost from "./components/NewPost.vue"
+  import Post from "./components/Post.vue"
   import { useStore } from "./stores/store"
   import { computed } from 'vue';
 
@@ -97,7 +101,7 @@ ul {
 }
 #postcreate {
   flex: 1;
-  width: 100%;
+  width: 90%;
   margin: 20px;
   padding: 15px;
   background: whitesmoke

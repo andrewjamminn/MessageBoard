@@ -9,7 +9,7 @@ import {
     updateDoc,
     setDoc
 } from "firebase/firestore";
-import { User, Post } from "../types/forum";
+import { User, Post, Comment } from "../types/forum";
 
 async function findUser(username: string) {
     const q = query(collection(db, "users"), where("username", "==", username));
@@ -185,6 +185,57 @@ export const useStore = defineStore("Forum", {
                 return false;
             }
             
+        },
+        getTime() {
+            // Get current date and time
+            const now = new Date();
+    
+            // Format as 24-hour time (HH:MM:SS)
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+    
+            // Format full date with 24-hour time
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
+            const day = now.getDate().toString().padStart(2, '0');
+    
+            // Create formatted strings
+            const timeString = `${hours}:${minutes}`;
+            const dateTimeString = `${year}-${month}-${day} ${timeString}`;
+    
+            return dateTimeString;
+        },
+
+        async postComment(post: Post, comment: string, user: User){
+            //check that comment isn't empty
+            if(comment!==''){
+                const id = post.comments.length;
+                const newComment: Comment = {
+                    id: id.toString(),
+                    author: user,
+                    content: comment
+                }
+                //add to local storage
+                post.comments.push(newComment);
+                //add to cloud storage
+                // Reference to the document
+                const docRef = doc(db, "posts", post.id);
+
+                // Update the document
+                updateDoc(docRef, {
+                    comments: post.comments,
+                })
+                    .then(() => {
+                    console.log("Document successfully updated!");
+                })
+                    .catch((error) => {
+                    console.error("Error updating document: ", error);
+                });
+                return true;
+            }
+            else {
+                return false;
+            }
         }
 
     }

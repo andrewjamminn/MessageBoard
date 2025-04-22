@@ -7,6 +7,7 @@ interface User {
 }
 
 interface Comment {
+    id: string;
     author: User;
     content: string;
 }
@@ -17,7 +18,7 @@ interface Post {
     title: string;
     timestamp: string;
     contents: string;
-    comments?: Comment[]
+    comments: Comment[]
 }
 
 export type { User, Comment, Post };

@@ -27,29 +27,9 @@
     const newPostContents = ref('');
     const errorMsg = ref('');
 
-    const getTime = () => {
-        // Get current date and time
-        const now = new Date();
-
-        // Format as 24-hour time (HH:MM:SS)
-        const hours = now.getHours().toString().padStart(2, '0');
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        const seconds = now.getSeconds().toString().padStart(2, '0');
-
-        // Format full date with 24-hour time
-        const year = now.getFullYear();
-        const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
-        const day = now.getDate().toString().padStart(2, '0');
-
-        // Create formatted strings
-        const timeString = `${hours}:${minutes}:${seconds}`;
-        const dateTimeString = `${year}-${month}-${day} ${timeString}`;
-
-        return dateTimeString;
-    }
     const newPost = async () => {
         if(store.currentUser!==null){
-            const postSuccess = await store.newPost(store.currentUser, newPostTitle.value, getTime(), newPostContents.value)
+            const postSuccess = await store.newPost(store.currentUser, newPostTitle.value, store.getTime(), newPostContents.value)
             if (postSuccess===true){
                 errorMsg.value = '';
                 //ONLY clear values on success -- so users don't lose entire drafts
