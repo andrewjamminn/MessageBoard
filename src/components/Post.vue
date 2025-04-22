@@ -4,12 +4,17 @@
         <li id = "post">
             <!--render the title-->
             <h1> {{ post.title }}</h1>
-            <!--render the author-->
-            <h2> {{ post.author.username}} | {{ post.timestamp }}</h2>
-            <!--render the content-->
-            <h3> {{ post.contents }}</h3>
+            <!-- Toggle button to expand/collapse content -->
+            <button @click="toggleContent">
+                {{ isExpanded ? "Hide Content" : "Show Content" }}
+            </button>
+            <!-- Render the content only if expanded -->
+            <div v-if="isExpanded">
+                <h2>{{ post.author.username }} | {{ post.timestamp }}</h2>
+                <h3>{{ post.contents }}</h3>
+            </div>
         </li>
-        <li id="comments">
+        <li id="comments" v-if="isExpanded">
             <!-- new comment only displays if you're logged in-->
             <div v-if="store.currentUser!==null">
                 <!--new comment box-->
@@ -47,6 +52,7 @@
     
     const newComment = ref('');
     const errorMsg = ref('');
+    const isExpanded = ref(false);
 
     const postComment = async () => {
         if(store.currentUser!==null){
@@ -65,6 +71,10 @@
         }
         
     }
+
+    const toggleContent = () => {
+        isExpanded.value = !isExpanded.value;
+    };
 
 </script>
 
