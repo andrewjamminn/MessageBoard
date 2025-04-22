@@ -37,18 +37,21 @@
     </body>
 
     <!--display posts by currently logged in user-->
-
-    <!--posts collapsed by default, only show title-->
-
-    <!--expand option allows to expand posts to their full height (comments included)-->
-
-    <!--option to edit appears when expanded-->
+    <template v-for="post in store.posts">
+        <ul>
+            <!--if post is by currently logged in user and collapsed is true, display title + timestamp with "expand" option-->
+            <li v-if="post.author.username===store.currentUser.username">
+                <UserPosts :post=post :comments=post.comments />
+            </li>
+        </ul>
+    </template>
 </div>
 
 
 </template>
 
 <script setup lang="ts">
+import UserPosts from "../components/UserPosts.vue"
 import { useStore } from "../stores/store"
 const store = useStore();
 import { onMounted, ref } from 'vue';

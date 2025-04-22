@@ -109,13 +109,13 @@ ul {
 }
 #user {
   width: 25%;
-  flex: 1;
+  flex: 5;
   margin: 20px;
   padding: 15px;
   background: whitesmoke
 }
 #feed {
-  flex: 3;
+  flex: 7;
   width: 75%;
   margin: 20px;
   padding: 15px;

@@ -7,7 +7,8 @@ import {
     where,
     doc,
     updateDoc,
-    setDoc
+    setDoc,
+    deleteDoc
 } from "firebase/firestore";
 import { User, Post, Comment } from "../types/forum";
 
@@ -158,7 +159,9 @@ export const useStore = defineStore("Forum", {
         async newPost(author: User, title: string, time: string, content: string){
             //check that title and contents are both valid posts
             if(title!=='' && content!=='' ){
-                const id = this.posts.length+1;
+                //id is the most recent id + 1
+                const highestid = parseInt(this.posts[this.posts.length-1].id);
+                const id = highestid+1;
                 const newPost: Post = {
                     id: id.toString(),
                     author: author,
@@ -236,7 +239,48 @@ export const useStore = defineStore("Forum", {
             else {
                 return false;
             }
-        }
+        },
 
+        async confirmEdit(post: Post, newContent: string){
+            //update the local storage
+            post.contents = newContent;
+            //update the cloud storage
+            const docRef = doc(db, "posts", post.id);
+
+            // Update the document
+            updateDoc(docRef, {
+                content: newContent,
+            })
+                .then(() => {
+                console.log("Document successfully updated!");
+            })
+                .catch((error) => {
+                console.error("Error updating document: ", error);
+            });
+            return true;
+        },
+
+        async confirmDelete(post: Post){
+            //remove from local storage
+            const index = this.posts.indexOf(post);
+            //if post found
+            if(index!=-1){
+                console.log("Found the post");
+                this.posts.splice(index);
+                //remove from cloud storage
+                const docRef = doc(db, "posts", post.id);
+
+                // Delete the document
+                deleteDoc(docRef)
+                .then(() => {
+                    console.log("Document successfully deleted!");
+                })
+                .catch((error) => {
+                    console.error("Error removing document: ", error);
+                });
+            }
+
+        }
+    
     }
 })

@@ -1,11 +1,11 @@
 <template>
 <div id="box">
     <ul>
-        <li id = "post">
+        <div id = "post">
             <!--render the title-->
             <h1> {{ post.title }}</h1>
             <!-- Toggle button to expand/collapse content -->
-            <button @click="toggleContent">
+            <button id="expand" @click="toggleContent">
                 {{ isExpanded ? "Hide Content" : "Show Content" }}
             </button>
             <!-- Render the content only if expanded -->
@@ -13,8 +13,8 @@
                 <h2>{{ post.author.username }} | {{ post.timestamp }}</h2>
                 <h3>{{ post.contents }}</h3>
             </div>
-        </li>
-        <li id="comments" v-if="isExpanded">
+        </div>
+        <div id="comments" v-if="isExpanded">
             <!-- new comment only displays if you're logged in-->
             <div v-if="store.currentUser!==null">
                 <!--new comment box-->
@@ -32,7 +32,7 @@
                 <!--render comment contents-->
                 <h3>{{ comment.content }}</h3>
             </li>
-        </li>
+        </div>
     </ul>
     
 </div>
@@ -129,5 +129,10 @@ button {
     margin-left: 30px;
     padding:10px;
     border: 5px solid whitesmoke;
+}
+#expand {
+    background-color: transparent;
+    color:#4b0082;
+    
 }
 </style>
