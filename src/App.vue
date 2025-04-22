@@ -1,40 +1,58 @@
 <template>
+  <!-- Search bar -->
+  <div id="search">
+    <textarea
+      v-model="searchTerm"
+      placeholder="Search posts by title..."
+      @keydown.enter.prevent
+    ></textarea>
+  </div>
   <div id="postcreate">
-    <span v-if="store.currentUser!=null" id=title>Create a new post:</span>
+    <span v-if="store.currentUser!=null" id="title">Create a new post:</span>
     <NewPost />
   </div>
   <div id="parent" :class="bgColorClass">
     <div id="feed">
-      <!-- iterate through post collection backwards, show most recent first-->
-      <span id=title>Feed</span>
-      <ul> 
-        <li v-for="i in store.posts.length" :key="i">
-          <Post :post="store.posts[store.posts.length-i]" :comments="store.posts[store.posts.length-i].comments" />
+      <!-- iterate through filtered posts -->
+      <span id="title">Feed</span>
+      <ul>
+        <li v-for="post in filteredPosts" :key="post.id">
+          <Post :post="post" :comments="post.comments" />
         </li>
       </ul>
-    </div> 
+    </div>
     <div id="user">
       <UserTab />
     </div>
   </div>
 </template>
 <script setup lang="ts">
-  import UserTab from "./components/UserTab.vue"
-  import NewPost from "./components/NewPost.vue"
-  import Post from "./components/Post.vue"
-  import { useStore } from "./stores/store"
-  import { computed } from 'vue';
+  import UserTab from "./components/UserTab.vue";
+  import NewPost from "./components/NewPost.vue";
+  import Post from "./components/Post.vue";
+  import { useStore } from "./stores/store";
+  import { computed, ref } from "vue";
 
   const store = useStore();
+  const searchTerm = ref(""); // Search term entered by the user
 
-// Compute the background color class based on the user's favorite color
+  // Filtered posts based on the search term
+  const filteredPosts = computed(() => {
+    if (!searchTerm.value.trim()) {
+      return store.posts; // Show all posts if no search term
+    }
+    return store.posts.filter((post) =>
+      post.title.toLowerCase().includes(searchTerm.value.toLowerCase())
+    );
+  });
+
+  // Compute the background color class based on the user's favorite color
   const bgColorClass = computed(() => {
     if (store.currentUser && store.currentUser.favcolor) {
       return `bg-${store.currentUser.favcolor.toLowerCase()}`;
     }
-    return 'bg-default';
+    return "bg-default";
   });
-  
 </script>
 
 <style lang="scss">
@@ -125,6 +143,25 @@ ul {
   font-size: 30px;
   font-weight:bold;
   padding: 20px;
+}
+
+#search {
+  margin-bottom: 20px;
+}
+
+#search textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: none;
+}
+
+#search textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
 </style>
