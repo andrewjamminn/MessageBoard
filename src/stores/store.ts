@@ -158,7 +158,7 @@ export const useStore = defineStore("Forum", {
         async newPost(author: User, title: string, time: string, content: string){
             //check that title and contents are both valid posts
             if(title!=='' && content!=='' ){
-                const id = this.posts.length
+                const id = this.posts.length+1;
                 const newPost: Post = {
                     id: id.toString(),
                     author: author,

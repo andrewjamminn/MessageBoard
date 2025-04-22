@@ -3,7 +3,6 @@ interface User {
     username: string;
     password: string;
     favcolor?: string;
-    posts?: Post[]
 }
 
 interface Comment {

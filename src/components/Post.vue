@@ -117,7 +117,7 @@ button {
     width: 90%;
     align-content: right;
     margin-left: 30px;
-    padding:5px;
+    padding:10px;
     border: 5px solid whitesmoke;
 }
 </style>
