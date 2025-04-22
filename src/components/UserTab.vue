@@ -16,11 +16,14 @@
             {{ errorMsg }}
         </li>
     </ul>
+    <h2>Sign in to view your posts!</h2>
 </div>
 <!--otherwise-->
 <div v-else>
-    {{ store.currentUser.username }} is signed in!
-    <button @click="logOut">Log out!</button>
+
+    <button @click="logOut">Log out</button><br>
+    <span id="title">{{ store.currentUser.username }}</span>
+
     <body class="favcolor" v-if="store.currentUser.favcolor===undefined">
         <!--site bullies you into choosing your favorite color-->
         You haven't chosen a favorite color yet! <br>
@@ -32,11 +35,16 @@
                 </option>
             </select>
     </body>
+
+    <!--display posts by currently logged in user-->
+
+    <!--posts collapsed by default, only show title-->
+
+    <!--expand option allows to expand posts to their full height (comments included)-->
+
+    <!--option to edit appears when expanded-->
 </div>
 
-<div v-if="store.currentUser">
-    Signed in. User's posts appear in this column.
-</div>
 
 </template>
 

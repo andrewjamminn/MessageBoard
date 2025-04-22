@@ -1,10 +1,12 @@
 <template>
   <div id="postcreate">
+    <span v-if="store.currentUser!=null" id=title>Create a new post:</span>
     <NewPost />
   </div>
   <div id="parent" :class="bgColorClass">
     <div id="feed">
       <!-- iterate through post collection backwards, show most recent first-->
+      <span id=title>Feed</span>
       <ul> 
         <li v-for="i in store.posts.length" :key="i">
           <Post :post="store.posts[store.posts.length-i]" :comments="store.posts[store.posts.length-i].comments" />
@@ -32,7 +34,6 @@
     }
     return 'bg-default';
   });
-
   
 </script>
 
@@ -42,7 +43,7 @@ html {
   position: relative;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  //height: 100%;
   background-color: #59b7f6;
   background: linear-gradient(to bottom, #c9c9c9 0%, #f4f4f4 100%);
 }
@@ -108,16 +109,22 @@ ul {
 }
 #user {
   width: 25%;
+  flex: 1;
   margin: 20px;
   padding: 15px;
   background: whitesmoke
 }
 #feed {
-  flex: 1;
+  flex: 3;
   width: 75%;
   margin: 20px;
   padding: 15px;
   background: whitesmoke
+}
+#title {
+  font-size: 30px;
+  font-weight:bold;
+  padding: 20px;
 }
 
 </style>
