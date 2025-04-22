@@ -21,10 +21,19 @@
 <!--otherwise-->
 <div v-else>
 
-    <button @click="logOut">Log out</button><br>
+    <li>
+        <button @click="logOut">Log out</button>
+        <button @click="deleteAccount">Delete Account</button>
+    </li>
+    <li v-if="deleting">
+        <h3>Are you sure?</h3>
+        <button @click="confirmDelete">Confirm Deletion</button>
+        <button @click="cancelDelete">Cancel</button>
+    </li>
+    
     <span id="title">{{ store.currentUser.username }}</span>
 
-    <body class="favcolor" v-if="store.currentUser.favcolor===undefined">
+    <body class="favcolor" v-if="store.currentUser.favcolor==='Gray'">
         <!--site bullies you into choosing your favorite color-->
         You haven't chosen a favorite color yet! <br>
         <label for="dropdown">Select an option:</label><br>
@@ -58,6 +67,7 @@ import { onMounted, ref } from 'vue';
 const enteredUser = ref('');
 const enteredPwd = ref('');
 const errorMsg = ref('');
+const deleting = ref(false);
 
 // When user signs in, set the selected color to their saved favorite
 onMounted(() => {
@@ -107,6 +117,30 @@ const updateFavColor = async () => {
   }
 }
 
+const deleteAccount = () => {
+    deleting.value = !deleting.value;
+}
+const cancelDelete = () => {
+    deleting.value = !deleting.value;
+}
+
+const confirmDelete = () => {
+    //delete all posts by the current user
+    for(const post of store.posts){
+        //if a post is by the user being deleted
+        if(store.currentUser!==null && post.author.username === store.currentUser.username){
+            //delete it
+            store.confirmDelete(post);
+        }
+    }
+    if(store.currentUser!=null){
+        //delete the user
+        store.deleteUser(store.currentUser);
+    }
+    deleting.value = !deleting.value;
+    
+}
+
 const selected = ref('');
 const colors = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'];
 
@@ -136,6 +170,9 @@ button {
     }
 
 ul {
+    list-style: none;
+}
+li {
     list-style: none;
 }
 .sign-in {

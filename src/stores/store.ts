@@ -106,7 +106,8 @@ export const useStore = defineStore("Forum", {
             else {
                 //check to make sure password isn't empty
                 if(password!=='') {
-                    const id = this.users.length;
+                    const highestid = parseInt(this.users[this.users.length-1].id);
+                    const id = highestid+1;
                     const newUser: User = {
                         id: id.toString(),
                         username: user,
@@ -118,7 +119,8 @@ export const useStore = defineStore("Forum", {
                     await setDoc(doc(db, "users", id.toString()), {
                         id: id.toString(),
                         username: user,
-                        password: password
+                        password: password,
+                        favcolor: 'Gray'
                     });
                     //update current user
                     this.currentUser = newUser;
@@ -182,6 +184,7 @@ export const useStore = defineStore("Forum", {
                     comments: []
                 });
                 //new post created successfully
+                console.log("Success");
                 return true;
             }
             else {
@@ -261,11 +264,10 @@ export const useStore = defineStore("Forum", {
         },
 
         async confirmDelete(post: Post){
-            //remove from local storage
             const index = this.posts.indexOf(post);
             //if post found
             if(index!=-1){
-                console.log("Found the post");
+                //remove from local storage
                 this.posts.splice(index);
                 //remove from cloud storage
                 const docRef = doc(db, "posts", post.id);
@@ -280,6 +282,28 @@ export const useStore = defineStore("Forum", {
                 });
             }
 
+        },
+
+        async deleteUser (user: User){
+            
+            const origlength = this.users.length;
+            //remove from local storage
+            this.users = this.users.filter(users => users.id !== user.id);
+            if(this.users.length+1===origlength){
+                //remove from cloud storage
+                const docRef = doc(db, "users", user.id);
+
+                //Delete the document
+                deleteDoc(docRef)
+                .then(() => {
+                    console.log("User successfully deleted!");
+                })
+                .catch((error) => {
+                    console.error("Error removing document: ", error);
+                });
+                //current user is null
+                this.currentUser = null;
+            }
         }
     
     }
