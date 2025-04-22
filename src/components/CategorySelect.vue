@@ -9,7 +9,10 @@
   <script lang="ts" setup>
   import { ref, onMounted } from 'vue'
   
-  const props = defineProps<{ modelValue: number | null }>()
+  type Props = {
+    modelValue: number | null
+  };
+  defineProps<Props>();
   const emit = defineEmits(['update:modelValue'])
   
   const categories = ref<{ id: number; name: string }[]>([])

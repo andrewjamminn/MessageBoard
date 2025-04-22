@@ -12,8 +12,10 @@ interface Comment {
 }
 
 interface Post {
+    id: string;
     author: User;
     title: string;
+    timestamp: string;
     contents: string;
     comments?: Comment[]
 }

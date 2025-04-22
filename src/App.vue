@@ -1,15 +1,21 @@
 <template>
+  <div id="postcreate">
+    <NewPost />
+  </div>
   <div id="parent" :class="bgColorClass">
     <div id="feed">
+      <!-- iterate through post collection backwards, show most recent first-->
       Feed goes here
-    </div>
+    </div> 
+    
     <div id="user">
-      <SignIn />
+      <UserTab />
     </div>
   </div>
 </template>
 <script setup lang="ts">
-  import SignIn from "./components/UserTab.vue"
+  import UserTab from "./components/UserTab.vue"
+  import NewPost from "./components/NewPost.vue"
   import { useStore } from "./stores/store"
   import { computed } from 'vue';
 
@@ -22,6 +28,8 @@
     }
     return 'bg-default';
   });
+
+  
 </script>
 
 <style lang="scss">
@@ -33,6 +41,10 @@ html {
   height: 100%;
   background-color: #59b7f6;
   background: linear-gradient(to bottom, #c9c9c9 0%, #f4f4f4 100%);
+}
+
+ul {
+  list-style: none;
 }
 
 // Default background
@@ -82,6 +94,13 @@ html {
   width: 100%;
   margin: 0;
   padding: 0;
+}
+#postcreate {
+  flex: 1;
+  width: 100%;
+  margin: 20px;
+  padding: 15px;
+  background: whitesmoke
 }
 #user {
   width: 25%;

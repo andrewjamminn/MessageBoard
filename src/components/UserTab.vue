@@ -109,19 +109,8 @@ html {
     background-color: whitesmoke
 }
 
-ul {
-    list-style: none;
-}
-.sign-in {
-    margin: 10px;
-    padding: 10px;
 
-    input[type="text"] {
-        padding: 5px;
-        margin-right: 10px;
-        margin-bottom: 10px;
-    }
-    button {
+button {
         padding: 5px 10px;
         margin: 10px;
         background-color: #4b0082;
@@ -133,6 +122,19 @@ ul {
         &:hover {
             background-color: #6800b2
         }
+    }
+
+ul {
+    list-style: none;
+}
+.sign-in {
+    margin: 10px;
+    padding: 10px;
+
+    input[type="text"] {
+        padding: 5px;
+        margin-right: 10px;
+        margin-bottom: 10px;
     }
 }
 

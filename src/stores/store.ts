@@ -3,23 +3,13 @@ import db from "../firebase.ts";
 import {
     collection,
     getDocs,
-    addDoc,
     query,
     where,
     doc,
     updateDoc,
     setDoc
 } from "firebase/firestore";
-import { User, Comment, Post } from "../types/forum";
-
-async function addDataToCollection(collectionName: string, data: any) {
-    try {
-      const docRef = await addDoc(collection(db, collectionName), data);
-      console.log("Document written with ID: ", docRef.id);
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
-}
+import { User, Post } from "../types/forum";
 
 async function findUser(username: string) {
     const q = query(collection(db, "users"), where("username", "==", username));
@@ -164,6 +154,38 @@ export const useStore = defineStore("Forum", {
                 }
             }
             return false;
+        },
+        async newPost(author: User, title: string, time: string, content: string){
+            //check that title and contents are both valid posts
+            if(title!=='' && content!=='' ){
+                const id = this.posts.length
+                const newPost: Post = {
+                    id: id.toString(),
+                    author: author,
+                    title: title,
+                    contents: content,
+                    timestamp: time,
+                    comments: []
+                }
+                //add to local storage
+                this.posts.push(newPost);
+                //add to cloud storage
+                await setDoc(doc(db, "posts", id.toString()), {
+                    id: id.toString(),
+                    author: author,
+                    title: title,
+                    contents: content,
+                    timestamp: time,
+                    comments: []
+                });
+                //new post created successfully
+                return true;
+            }
+            else {
+                return false;
+            }
+            
         }
+
     }
 })
