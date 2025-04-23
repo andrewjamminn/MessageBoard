@@ -180,7 +180,6 @@ export const useStore = defineStore("Forum", {
                     const id = highestid + 1;
                     //encrypt password
                     const hashedPassword = await encrypt(password);
-                    console.log(hashedPassword);
                     const newUser: User = {
                         id: id,
                         username: user,
@@ -240,16 +239,6 @@ export const useStore = defineStore("Forum", {
                 const highestid = this.posts.length > 0 ? 
                     Math.max(...this.posts.map(post => post.id)) : 0;
                 const id = highestid + 1;
-                const newPost: Post = {
-                    id: id,
-                    author: author,
-                    title: title,
-                    content: content,
-                    timestamp: time,
-                    comments: []
-                }
-                //add to local storage
-                //this.posts.push(newPost);
                 sortByID(this.posts, true);
                 //add to cloud storage
                 await setDoc(doc(db, "posts", id.toString()), {

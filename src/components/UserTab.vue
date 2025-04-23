@@ -95,14 +95,16 @@ const signIn = async () => {
 }
 
 const signUp = async () => {
-    const usernamePattern = /^[a-z0-9-]{1-25}$/;
-    const passwordPattern = /^[a-zA-Z0-9]{1-25}$/;
+    const username = enteredUser.value;
+    const password = enteredPwd.value;
+    const usernamePattern = new RegExp("[a-z0-9-]{1,25}");
+    const passwordPattern = new RegExp("[a-zA-Z0-9]{1,25}");
     
-    if (!usernamePattern.test(enteredUser.value)) {
+    if (!usernamePattern.test(username)) {
         errorMsg.value = "Username can only contain lowercase letters, numbers, and hyphens (-). Must be 1-25 characters.";
         return;
     }
-    if (!passwordPattern.test(enteredPwd.value)){
+    if (!passwordPattern.test(password)){
         errorMsg.value = "Password can only contain alphanumeric characters. Must be 1-25 characters.";
         return;
     }
