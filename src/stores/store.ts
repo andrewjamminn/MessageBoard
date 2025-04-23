@@ -50,12 +50,14 @@ async function findUser(username: string) {
       const foundUsername = userData.username;
       const foundPassword = userData.password;
       const foundFavcolor = userData.favcolor; // Add this to retrieve favcolor if it exists
+      const foundAdminStatus = userData.admin;
       console.log("Found document:", firstMatch.id);
       return {
         id: foundID,
         username: foundUsername,
         password: foundPassword,
-        favcolor: foundFavcolor // Include favcolor in the returned user object
+        favcolor: foundFavcolor, // Include favcolor in the returned user object
+        admin: foundAdminStatus
       };
     } catch (error) {
       console.error("Error finding document:", error);
@@ -146,7 +148,8 @@ export const useStore = defineStore("Forum", {
                         id: id,
                         username: user,
                         password: hashedPassword,
-                        favcolor: 'Gray'
+                        favcolor: 'Gray',
+                        admin: false
                     };
                     //add to local storage
                     this.users.push(newUser);
