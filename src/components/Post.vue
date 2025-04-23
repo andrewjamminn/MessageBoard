@@ -44,8 +44,14 @@
                 </div>
                 <!-- Edit and Delete buttons -->
                 <div v-if="comment.author.id === store.currentUser?.id && !comment.deleted">
-                    <button @click="editComment(index, comment.content)">Edit</button>
-                    <button @click="deleteComment(index)">Delete</button>
+                    <button v-if="!confirmingDelete[index]" @click="confirmDelete(index)">Delete</button>
+                    <div v-else>
+                        <h3><strong>Are you sure?</strong></h3>
+                        <button @click="deleteComment(index)">Confirm Delete</button>
+                        <button @click="cancelDelete(index)">Cancel</button>
+                    </div>
+                    <!-- Hide the Edit button when confirming delete -->
+                    <button v-if="!confirmingDelete[index]" @click="editComment(index, comment.content)">Edit</button>
                 </div>
             </li>
         </div>
@@ -70,6 +76,7 @@ const errorMsg = ref("");
 const isExpanded = ref(false);
 const editingCommentIndex = ref<number | null>(null); // Track which comment is being edited
 const editedComment = ref(""); // Store the edited comment content
+const confirmingDelete = ref<Record<number, boolean>>({}); // Track confirmation state for each comment
 
 // Post a new comment
 const postComment = async () => {
@@ -107,11 +114,22 @@ const cancelEdit = () => {
     editedComment.value = "";
 };
 
+// Confirm delete
+const confirmDelete = (index: number) => {
+    confirmingDelete.value[index] = true;
+};
+
+// Cancel delete
+const cancelDelete = (index: number) => {
+    confirmingDelete.value[index] = false;
+};
+
 // Delete a comment
 const deleteComment = async (index: number) => {
     const comment = props.comments?.[index];
     if (comment && comment.author.id === store.currentUser?.id) {
         await store.deleteComment(props.post, index); // Call the store action to delete the comment
+        confirmingDelete.value[index] = false; // Reset confirmation state
     }
 };
 
