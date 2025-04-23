@@ -12,9 +12,20 @@
     <div id="search">
       <textarea
         v-model="searchTerm"
-        placeholder="Search posts by title..."
+        placeholder="Search posts by..."
         @keydown.enter.prevent
     ></textarea>
+      <template v-for="filter in options">
+            <label>
+              <input
+                type="radio"
+                name="filter"
+                :value="filter"
+                v-model=filterOption
+              />
+              {{ filter }}
+            </label>
+      </template>
   </div>
       <ul>
         <li>
@@ -40,15 +51,31 @@
 
   const store = useStore();
   const searchTerm = ref(""); // Search term entered by the user
+  const filterOption = ref('');
+  const options = ["Title", "User", "Content"];
 
   // Filtered posts based on the search term
   const filteredPosts = computed(() => {
     if (!searchTerm.value.trim()) {
       return store.posts; // Show all posts if no search term
     }
-    return store.posts.filter((post) =>
-      post.title.toLowerCase().includes(searchTerm.value.toLowerCase())
-    );
+    //filter by title
+    if(filterOption.value==="Title"){
+        return store.posts.filter((post) =>
+        post.title.toLowerCase().includes(searchTerm.value.toLowerCase())
+      );
+    }
+    else if(filterOption.value === "User"){
+      return store.posts.filter((post) =>
+        post.author.username.toLowerCase().includes(searchTerm.value.toLowerCase())
+      );
+    }
+    else if(filterOption.value==="Content"){
+      return store.posts.filter((post) =>
+        post.content.toLowerCase().includes(searchTerm.value.toLowerCase())
+      );
+    }
+    
   });
 
   // Compute the background color class based on the user's favorite color
