@@ -252,7 +252,7 @@ export const useStore = defineStore("Forum", {
                     id: id,
                     author: author,
                     title: title,
-                    contents: content,
+                    content: content,
                     timestamp: time,
                     comments: []
                 });
