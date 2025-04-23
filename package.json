@@ -10,6 +10,8 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "firebase": "^11.6.0",
     "pinia": "^3.0.1",
     "pinia-plugin-persistedstate": "^4.2.0",
@@ -17,6 +19,8 @@
     "vue3-google-login": "^2.0.33"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/bcryptjs": "^2.4.6",
     "@vitejs/plugin-vue": "^5.0.4",
     "eslint": "^9.23.0",
     "eslint-config-prettier": "^9.1.0",

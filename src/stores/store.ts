@@ -12,6 +12,7 @@ import {
     orderBy
 } from "firebase/firestore";
 import { User, Post, Comment } from "../types/forum";
+import bcrypt from 'bcryptjs';
 
 function sortByID(array: any, newestFirst: boolean){
     if(newestFirst){
@@ -21,6 +22,15 @@ function sortByID(array: any, newestFirst: boolean){
         array.sort((a: { id: number; }, b: { id: number; }) => a.id - b.id);
     }
 }
+
+async function encrypt(password: string){
+    // Generate a salt
+    const salt = await bcrypt.genSalt(10);
+    // Hash the password with the salt
+    const hashedPassword = await bcrypt.hash(password, salt);
+    return hashedPassword;
+}
+
 async function findUser(username: string) {
     const q = query(collection(db, "users"), where("username", "==", username));
    
@@ -99,7 +109,8 @@ export const useStore = defineStore("Forum", {
             //if username found
             if(foundUser){
                 //does password match the username?
-                if(foundUser.password === password){
+                const isPasswordMatch = await bcrypt.compare(password, foundUser.password);
+                if(isPasswordMatch){
                     //loginSuccess = true
                     this.currentUser = foundUser;
                     return true;
@@ -128,10 +139,13 @@ export const useStore = defineStore("Forum", {
                     const highestid = this.users.length > 0 ? 
                         Math.max(...this.users.map(user => user.id)) : 0;
                     const id = highestid + 1;
+                    //encrypt password
+                    const hashedPassword = await encrypt(password);
+                    console.log(hashedPassword);
                     const newUser: User = {
                         id: id,
                         username: user,
-                        password: password,
+                        password: hashedPassword,
                         favcolor: 'Gray'
                     };
                     //add to local storage
@@ -141,7 +155,7 @@ export const useStore = defineStore("Forum", {
                     await setDoc(doc(db, "users", id.toString()), {
                         id: id,
                         username: user,
-                        password: password,
+                        password: hashedPassword,
                         favcolor: 'Gray'
                     });
                     //update current user

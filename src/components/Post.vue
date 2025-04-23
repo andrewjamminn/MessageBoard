@@ -6,7 +6,7 @@
             <h1>{{ post.title }}</h1>
             <!-- Toggle button to expand/collapse content -->
             <button id="expand" @click="toggleContent">
-                {{ isExpanded ? "Hide Content" : "Show Content" }}
+                {{ isExpanded ? "Collapse" : "Expand" }}
             </button>
             <!-- Render the content only if expanded -->
             <div v-if="isExpanded">
@@ -73,7 +73,7 @@ const props = defineProps<Props>();
 
 const newComment = ref("");
 const errorMsg = ref("");
-const isExpanded = ref(false);
+const isExpanded = ref(true);
 const editingCommentIndex = ref<number | null>(null); // Track which comment is being edited
 const editedComment = ref(""); // Store the edited comment content
 const confirmingDelete = ref<Record<number, boolean>>({}); // Track confirmation state for each comment

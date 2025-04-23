@@ -7,7 +7,7 @@
             <!-- Toggle button to expand/collapse content -->
             <li>
                 <button id="expand" @click="toggleContent">
-                    {{ isExpanded ? "Hide Content" : "Show Content" }}
+                    {{ isExpanded ? "Collapse" : "Expand" }}
                 </button> 
             </li>
             
