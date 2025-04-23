@@ -93,6 +93,7 @@
     const confirmDelete = () => {
         //remove contents from database
         store.confirmDelete(props.post);
+        isExpanded.value = false;
     }
     const cancelDelete = () => {
         deleting.value = !deleting.value;

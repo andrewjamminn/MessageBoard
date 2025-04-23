@@ -8,10 +8,19 @@ import {
     doc,
     updateDoc,
     setDoc,
-    deleteDoc
+    deleteDoc,
+    orderBy
 } from "firebase/firestore";
 import { User, Post, Comment } from "../types/forum";
 
+function sortByID(array: any, newestFirst: boolean){
+    if(newestFirst){
+        array.sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
+    }
+    else {
+        array.sort((a: { id: number; }, b: { id: number; }) => a.id - b.id);
+    }
+}
 async function findUser(username: string) {
     const q = query(collection(db, "users"), where("username", "==", username));
    
@@ -27,12 +36,13 @@ async function findUser(username: string) {
       const firstMatch = querySnapshot.docs[0];
       // Access individual fields
       const userData = firstMatch.data();
+      const foundID = userData.id;
       const foundUsername = userData.username;
       const foundPassword = userData.password;
       const foundFavcolor = userData.favcolor; // Add this to retrieve favcolor if it exists
       console.log("Found document:", firstMatch.id);
       return {
-        id: firstMatch.id,
+        id: foundID,
         username: foundUsername,
         password: foundPassword,
         favcolor: foundFavcolor // Include favcolor in the returned user object
@@ -58,20 +68,29 @@ export const useStore = defineStore("Forum", {
             this.isLoading = true;
             this.error = null;
             try {
-                //fetch posts collection
-                const postSnapshot = await getDocs(collection(db, "posts"));
+                // Fetch posts collection sorted by id
+                const postsRef = collection(db, "posts");
+                const postsQuery = query(postsRef, orderBy("id", "asc"));
+                const postSnapshot = await getDocs(postsQuery);
                 this.posts = postSnapshot.docs.map(doc => doc.data() as Post);
                 console.log("Successfully fetched post database");
-                //fetch users collection
-                const userSnapshot = await getDocs(collection(db, "users"));
+                
+                // Fetch users collection sorted by id
+                const usersRef = collection(db, "users");
+                const usersQuery = query(usersRef, orderBy("id", "asc"));
+                const userSnapshot = await getDocs(usersQuery);
                 this.users = userSnapshot.docs.map(doc => doc.data() as User);
                 console.log("Successfully fetched registered users");
-            } catch (error) {
+                console.log(this.users);
+                //sort the arrays by id
+                sortByID(this.posts, true);
+                sortByID(this.users, true);
+              } catch (error) {
                 console.error("Error initializing store:", error);
                 this.error = error instanceof Error ? error.message : "Unknown error occured";
-            } finally {
+              } finally {
                 this.isLoading = false;
-            }
+              }
         },
         
         async signIn(user: string, password: string) {
@@ -106,18 +125,21 @@ export const useStore = defineStore("Forum", {
             else {
                 //check to make sure password isn't empty
                 if(password!=='') {
-                    const highestid = parseInt(this.users[this.users.length-1].id);
-                    const id = highestid+1;
+                    const highestid = this.users.length > 0 ? 
+                        Math.max(...this.users.map(user => user.id)) : 0;
+                    const id = highestid + 1;
                     const newUser: User = {
-                        id: id.toString(),
+                        id: id,
                         username: user,
                         password: password,
+                        favcolor: 'Gray'
                     };
                     //add to local storage
                     this.users.push(newUser);
+                    sortByID(this.users, true);
                     //add to cloud storage
                     await setDoc(doc(db, "users", id.toString()), {
-                        id: id.toString(),
+                        id: id,
                         username: user,
                         password: password,
                         favcolor: 'Gray'
@@ -141,7 +163,7 @@ export const useStore = defineStore("Forum", {
             if (this.currentUser) {
                 try {
                     // Update in Firestore
-                    const userRef = doc(db, "users", this.currentUser.id);
+                    const userRef = doc(db, "users", this.currentUser.id.toString());
                     await updateDoc(userRef, {
                         favcolor: color
                     });
@@ -162,10 +184,11 @@ export const useStore = defineStore("Forum", {
             //check that title and contents are both valid posts
             if(title!=='' && content!=='' ){
                 //id is the most recent id + 1
-                const highestid = parseInt(this.posts[this.posts.length-1].id);
-                const id = highestid+1;
+                const highestid = this.posts.length > 0 ? 
+                    Math.max(...this.posts.map(post => post.id)) : 0;
+                const id = highestid + 1;
                 const newPost: Post = {
-                    id: id.toString(),
+                    id: id,
                     author: author,
                     title: title,
                     contents: content,
@@ -174,6 +197,7 @@ export const useStore = defineStore("Forum", {
                 }
                 //add to local storage
                 this.posts.push(newPost);
+                sortByID(this.posts, true);
                 //add to cloud storage
                 await setDoc(doc(db, "posts", id.toString()), {
                     id: id.toString(),
@@ -215,17 +239,20 @@ export const useStore = defineStore("Forum", {
         async postComment(post: Post, comment: string, user: User){
             //check that comment isn't empty
             if(comment!==''){
-                const id = post.comments.length;
+                const highestid = post.comments.length > 0 ? 
+                    Math.max(...post.comments.map(comment => comment.id)) : 0;
+                const id = highestid + 1;
                 const newComment: Comment = {
-                    id: id.toString(),
+                    id: id,
                     author: user,
                     content: comment
                 }
                 //add to local storage
                 post.comments.push(newComment);
+                sortByID(post.comments, true);
                 //add to cloud storage
                 // Reference to the document
-                const docRef = doc(db, "posts", post.id);
+                const docRef = doc(db, "posts", post.id.toString());
 
                 // Update the document
                 updateDoc(docRef, {
@@ -248,7 +275,7 @@ export const useStore = defineStore("Forum", {
             //update the local storage
             post.contents = newContent;
             //update the cloud storage
-            const docRef = doc(db, "posts", post.id);
+            const docRef = doc(db, "posts", post.id.toString());
 
             // Update the document
             updateDoc(docRef, {
@@ -264,18 +291,17 @@ export const useStore = defineStore("Forum", {
         },
 
         async confirmDelete(post: Post){
-            const index = this.posts.indexOf(post);
-            //if post found
-            if(index!=-1){
-                //remove from local storage
-                this.posts.splice(index);
+            const origlength = this.posts.length;
+            //remove from local storage
+            this.posts = this.posts.filter(posts => posts.id !== post.id);
+            if(this.posts.length+1===origlength){
                 //remove from cloud storage
-                const docRef = doc(db, "posts", post.id);
+                const docRef = doc(db, "posts", post.id.toString());
 
-                // Delete the document
+                //Delete the document
                 deleteDoc(docRef)
                 .then(() => {
-                    console.log("Document successfully deleted!");
+                    console.log("Post successfully deleted!");
                 })
                 .catch((error) => {
                     console.error("Error removing document: ", error);
@@ -291,7 +317,7 @@ export const useStore = defineStore("Forum", {
             this.users = this.users.filter(users => users.id !== user.id);
             if(this.users.length+1===origlength){
                 //remove from cloud storage
-                const docRef = doc(db, "users", user.id);
+                const docRef = doc(db, "users", user.id.toString());
 
                 //Delete the document
                 deleteDoc(docRef)
@@ -314,7 +340,7 @@ export const useStore = defineStore("Forum", {
                 comment.deleted = true; 
 
                 // Update the post in Firestore
-                const docRef = doc(db, "posts", post.id);
+                const docRef = doc(db, "posts", post.id.toString());
                 await updateDoc(docRef, {
                     comments: post.comments,
                 });
@@ -331,7 +357,7 @@ export const useStore = defineStore("Forum", {
                 comment.edited = true;
 
                 // Update the post in Firestore
-                const docRef = doc(db, "posts", post.id);
+                const docRef = doc(db, "posts", post.id.toString());
                 await updateDoc(docRef, {
                     comments: post.comments,
                 });

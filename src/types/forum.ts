@@ -1,12 +1,12 @@
 interface User {
-    id: string;
+    id: number;
     username: string;
     password: string;
     favcolor?: string;
 }
 
 interface Comment {
-    id: string;
+    id: number;
     author: User;
     content: string;
     deleted?: boolean;
@@ -14,7 +14,7 @@ interface Comment {
 }
 
 interface Post {
-    id: string;
+    id: number;
     author: User;
     title: string;
     timestamp: string;
