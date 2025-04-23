@@ -108,8 +108,8 @@ const signUp = async () => {
         errorMsg.value = "Username and password cannot match."
         return;
     }
-    const usernamePattern = new RegExp("[a-z0-9-]{1,25}");
-    const passwordPattern = new RegExp("[a-zA-Z0-9]{1,25}");
+    const usernamePattern = new RegExp("^[a-z0-9-]{1,25}$");
+    const passwordPattern = new RegExp("^[a-zA-Z0-9]{1,25}$");
     
     if (!usernamePattern.test(username)) {
         errorMsg.value = "Username can only contain lowercase letters, numbers, and hyphens (-). Must be 1-25 characters.";
