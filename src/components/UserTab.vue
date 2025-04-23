@@ -97,6 +97,11 @@ const signIn = async () => {
 const signUp = async () => {
     const username = enteredUser.value;
     const password = enteredPwd.value;
+    //check if username and password are the same
+    if(username === password){
+        errorMsg.value = "Username and password cannot match."
+        return;
+    }
     const usernamePattern = new RegExp("[a-z0-9-]{1,25}");
     const passwordPattern = new RegExp("[a-zA-Z0-9]{1,25}");
     
