@@ -16,6 +16,10 @@
     ></textarea>
   </div>
       <ul>
+        <li>
+          <button @click="newFirst">Newest First</button>
+          <button @click="oldFirst">Oldest First</button>
+        </li>
         <li v-for="post in filteredPosts" :key="post.id">
           <Post :post="post" :comments="post.comments" />
         </li>
@@ -53,6 +57,13 @@
     }
     return "bg-default";
   });
+
+  const newFirst = () => {
+    store.posts.sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
+  }
+  const oldFirst = () => {
+    store.posts.sort((a: { id: number; }, b: { id: number; }) => a.id - b.id);
+  }
 </script>
 
 <style lang="scss">
