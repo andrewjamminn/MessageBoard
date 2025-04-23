@@ -9,6 +9,7 @@ interface Comment {
     id: string;
     author: User;
     content: string;
+    deleted?: boolean;
 }
 
 interface Post {

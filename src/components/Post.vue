@@ -1,9 +1,9 @@
 <template>
 <div id="box">
     <ul>
-        <div id = "post">
-            <!--render the title-->
-            <h1> {{ post.title }}</h1>
+        <div id="post">
+            <!-- Render the title -->
+            <h1>{{ post.title }}</h1>
             <!-- Toggle button to expand/collapse content -->
             <button id="expand" @click="toggleContent">
                 {{ isExpanded ? "Hide Content" : "Show Content" }}
@@ -15,67 +15,74 @@
             </div>
         </div>
         <div id="comments" v-if="isExpanded">
-            <!-- new comment only displays if you're logged in-->
-            <div v-if="store.currentUser!==null">
-                <!--new comment box-->
-                <input id="newcomment" maxlength="150" v-model="newComment" placeholder="Say something! (150 character limit)"/>
-                <!--post comment button-->
+            <!-- New comment only displays if you're logged in -->
+            <div v-if="store.currentUser !== null">
+                <!-- New comment box -->
+                <input id="newcomment" maxlength="150" v-model="newComment" placeholder="Say something! (150 character limit)" />
+                <!-- Post comment button -->
                 <button @click="postComment">Post Comment</button>
-                <!--comment error-->
-                <li id = "error">
+                <!-- Comment error -->
+                <li id="error">
                     {{ errorMsg }}
                 </li>
             </div>
-            <li id="individualcomment" v-for="comment in comments">
-                <!--render comment author-->
-                <h2> {{ comment.author.username }} | {{ store.getTime() }}</h2>
-                <!--render comment contents-->
-                <h3>{{ comment.content }}</h3>
+            <li id="individualcomment" v-for="(comment, index) in comments" :key="comment.id">
+                <!-- Render comment author -->
+                <h2>{{ comment.author.username }} | {{ store.getTime() }}</h2>
+                <!-- Render comment contents -->
+                <h3 v-if="!comment.deleted">{{ comment.content }}</h3>
+                <h3 v-else>This comment has been deleted</h3>
+                <!-- Delete button for the comment -->
+                <button v-if="comment.author.id === store.currentUser?.id && !comment.deleted" @click="deleteComment(index)">
+                    Delete Comment
+                </button>
             </li>
         </div>
     </ul>
-    
 </div>
 </template>
 
 <script setup lang="ts">
-    import { ref } from 'vue'
-    import { Post, Comment } from "../types/forum.ts"
-    import { useStore } from '../stores/store.ts'
+import { ref } from "vue";
+import { Post, Comment } from "../types/forum.ts";
+import { useStore } from "../stores/store.ts";
 
-    const store = useStore();
-        type Props = {
-            post: Post;
-            comments: Comment[] | undefined;
-        }; 
-        const props = defineProps<Props>();
-    
-    const newComment = ref('');
-    const errorMsg = ref('');
-    const isExpanded = ref(false);
+const store = useStore();
+type Props = {
+    post: Post;
+    comments: Comment[] | undefined;
+};
+const props = defineProps<Props>();
 
-    const postComment = async () => {
-        if(store.currentUser!==null){
-            const commentSuccess = await store.postComment(props.post, newComment.value, store.currentUser)
-            //if comment was successful
-            if(commentSuccess===true){
-                errorMsg.value='';
-                //clear input field
-                newComment.value='';
-            }
-            //if comment was unsuccessful
-            else {
-                errorMsg.value="Couldn't post message -- field was empty.";
-                //don't clear input field
-            }
+const newComment = ref("");
+const errorMsg = ref("");
+const isExpanded = ref(false);
+
+// Post a new comment
+const postComment = async () => {
+    if (store.currentUser !== null) {
+        const commentSuccess = await store.postComment(props.post, newComment.value, store.currentUser);
+        if (commentSuccess === true) {
+            errorMsg.value = "";
+            newComment.value = ""; // Clear input field
+        } else {
+            errorMsg.value = "Couldn't post message -- field was empty.";
         }
-        
     }
+};
 
-    const toggleContent = () => {
-        isExpanded.value = !isExpanded.value;
-    };
+// Delete a comment
+const deleteComment = async (index: number) => {
+    const comment = props.comments?.[index];
+    if (comment && comment.author.id === store.currentUser?.id) {
+        await store.deleteComment(props.post, index); // Call the store action to delete the comment
+    }
+};
 
+// Toggle post content visibility
+const toggleContent = () => {
+    isExpanded.value = !isExpanded.value;
+};
 </script>
 
 <style lang="scss">

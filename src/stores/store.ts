@@ -304,6 +304,23 @@ export const useStore = defineStore("Forum", {
                 //current user is null
                 this.currentUser = null;
             }
+        },
+
+        async deleteComment(post: Post, commentIndex: number) {
+            // Mark the comment as deleted in local storage
+            const comment = post.comments[commentIndex];
+            if (comment) {
+                comment.content = "This comment has been deleted";
+                comment.deleted = true; // Add a `deleted` flag to the comment
+
+                // Update the post in Firestore
+                const docRef = doc(db, "posts", post.id);
+                await updateDoc(docRef, {
+                    comments: post.comments,
+                });
+
+                console.log("Comment deleted successfully.");
+            }
         }
     
     }
