@@ -8,6 +8,8 @@
             <div v-if="isExpanded">
                 <h2>{{ post.author.username }} | {{ post.timestamp }}</h2>
                 <h3>{{ post.content }}</h3>
+                <li>
+            </li>
             </div>
         </div>
         <div id="comments" v-if="isExpanded">
@@ -39,7 +41,7 @@
                     <h3 v-else>This comment has been deleted.</h3>
                 </div>
                 <!-- Edit and Delete buttons -->
-                <div v-if="comment.author.id === store.currentUser?.id">
+                <div v-if="comment.author.id === store.currentUser?.id || store.currentUser?.username==='admin'">
                     <button v-if="!confirmingDelete[index]" @click="confirmDelete(index)">Delete</button>
                     <div v-else>
                         <h3><strong>Are you sure?</strong></h3>
@@ -55,6 +57,12 @@
         <button id="expand" @click="toggleContent">
                 {{ isExpanded ? "Collapse" : "Expand" }}
         </button>
+        <button v-if="store.currentUser?.username==='admin'" id="editrm" @click="deletePost">Delete Post</button>
+                <!--confirm delete-->
+                <li v-if="deleting">
+                    <button @click="confirmDeletePost">Confirm Delete</button>
+                    <button @click="cancelDeletePost">Cancel</button>
+                </li>
     </ul>
 </div>
 </template>
@@ -77,6 +85,19 @@ const isExpanded = ref(true);
 const editingCommentIndex = ref<number | null>(null); // Track which comment is being edited
 const editedComment = ref(""); // Store the edited comment content
 const confirmingDelete = ref<Record<number, boolean>>({}); // Track confirmation state for each comment
+const deleting = ref(false);
+
+const confirmDeletePost = () => {
+        //remove contents from database
+        store.confirmDelete(props.post);
+        isExpanded.value = false;
+    }
+const cancelDeletePost = () => {
+        deleting.value = !deleting.value;
+}
+const deletePost = () => {
+        deleting.value = true;
+    }
 
 // Post a new comment
 const postComment = async () => {
