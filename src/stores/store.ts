@@ -91,6 +91,8 @@ export const useStore = defineStore("Forum", {
                 // Handle initial data and updates
                 const updatedPosts = snapshot.docs.map(doc => doc.data() as Post);
                 this.posts = updatedPosts;
+                //re-sort posts
+                sortByID(this.posts, true);
                 console.log("Posts updated from Firestore");
             }, (error) => {
                 console.error("Error listening to posts:", error);
@@ -104,6 +106,8 @@ export const useStore = defineStore("Forum", {
                 // Handle initial data and updates
                 const updatedUsers = snapshot.docs.map(doc => doc.data() as User);
                 this.users = updatedUsers;
+                //re-sort users
+                sortByID(this.users, true);
                 console.log("Users updated from Firestore");
             }, (error) => {
                 console.error("Error listening to users:", error);
@@ -296,7 +300,7 @@ export const useStore = defineStore("Forum", {
                     author: user,
                     content: comment
                 }
-                //add to local storage
+                    //add to local storage
                     post.comments.push(newComment);
                     sortByID(post.comments, true);
                     //add to cloud storage

@@ -4,10 +4,6 @@
         <div id="post">
             <!-- Render the title -->
             <h1>{{ post.title }}</h1>
-            <!-- Toggle button to expand/collapse content -->
-            <button id="expand" @click="toggleContent">
-                {{ isExpanded ? "Collapse" : "Expand" }}
-            </button>
             <!-- Render the content only if expanded -->
             <div v-if="isExpanded">
                 <h2>{{ post.author.username }} | {{ post.timestamp }}</h2>
@@ -55,6 +51,10 @@
                 </div>
             </li>
         </div>
+        <!-- Toggle button to expand/collapse content -->
+        <button id="expand" @click="toggleContent">
+                {{ isExpanded ? "Collapse" : "Expand" }}
+        </button>
     </ul>
 </div>
 </template>
@@ -196,7 +196,6 @@ button {
 #expand {
     background-color: transparent;
     color:#4b0082;
-    
 }
 #editcomment {
     width: 80%; 

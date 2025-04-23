@@ -3,7 +3,7 @@
         <ul>
             <!-- title text box-->
             <li id="posttitle">
-                <input type="text" v-model="newPostTitle" placeholder="Title">
+                <input type="text" maxlength="50" v-model="newPostTitle" placeholder="Title (50 character limit)">
             </li>
             <!-- body text box, can be resized vertically if you have a lot to say -->
             <li>
