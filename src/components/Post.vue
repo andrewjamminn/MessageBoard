@@ -40,7 +40,7 @@
                 </div>
                 <div v-else>
                     <h3 v-if="!comment.deleted">{{ comment.content }}</h3>
-                    <h3 v-else>This comment has been deleted</h3>
+                    <h3 v-else>This comment has been deleted.</h3>
                 </div>
                 <!-- Edit and Delete buttons -->
                 <div v-if="comment.author.id === store.currentUser?.id && !comment.deleted">
@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from "vue";
+import { ref } from "vue";
 import { Post, Comment } from "../types/forum.ts";
 import { useStore } from "../stores/store.ts";
 
