@@ -28,14 +28,25 @@
             </div>
             <li id="individualcomment" v-for="(comment, index) in comments" :key="comment.id">
                 <!-- Render comment author -->
-                <h2>{{ comment.author.username }} | {{ store.getTime() }}</h2>
+                <h2>
+                    {{ comment.author.username }} | {{ store.getTime() }}
+                    <span v-if="comment.edited">(edited)</span>
+                </h2>
                 <!-- Render comment contents -->
-                <h3 v-if="!comment.deleted">{{ comment.content }}</h3>
-                <h3 v-else>This comment has been deleted</h3>
-                <!-- Delete button for the comment -->
-                <button v-if="comment.author.id === store.currentUser?.id && !comment.deleted" @click="deleteComment(index)">
-                    Delete Comment
-                </button>
+                <div v-if="editingCommentIndex === index">
+                    <textarea v-model="editedComment" maxlength="150"></textarea>
+                    <button @click="saveComment(index)">Save</button>
+                    <button @click="cancelEdit">Cancel</button>
+                </div>
+                <div v-else>
+                    <h3 v-if="!comment.deleted">{{ comment.content }}</h3>
+                    <h3 v-else>This comment has been deleted</h3>
+                </div>
+                <!-- Edit and Delete buttons -->
+                <div v-if="comment.author.id === store.currentUser?.id && !comment.deleted">
+                    <button @click="editComment(index, comment.content)">Edit</button>
+                    <button @click="deleteComment(index)">Delete</button>
+                </div>
             </li>
         </div>
     </ul>
@@ -57,6 +68,8 @@ const props = defineProps<Props>();
 const newComment = ref("");
 const errorMsg = ref("");
 const isExpanded = ref(false);
+const editingCommentIndex = ref<number | null>(null); // Track which comment is being edited
+const editedComment = ref(""); // Store the edited comment content
 
 // Post a new comment
 const postComment = async () => {
@@ -69,6 +82,29 @@ const postComment = async () => {
             errorMsg.value = "Couldn't post message -- field was empty.";
         }
     }
+};
+
+// Edit a comment
+const editComment = (index: number, content: string) => {
+    editingCommentIndex.value = index;
+    editedComment.value = content;
+};
+
+// Save the edited comment
+const saveComment = async (index: number) => {
+    if (editedComment.value.trim() === "") {
+        errorMsg.value = "Comment cannot be empty.";
+        return;
+    }
+    await store.editComment(props.post, index, editedComment.value);
+    editingCommentIndex.value = null;
+    editedComment.value = "";
+};
+
+// Cancel editing
+const cancelEdit = () => {
+    editingCommentIndex.value = null;
+    editedComment.value = "";
 };
 
 // Delete a comment

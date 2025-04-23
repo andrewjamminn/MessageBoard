@@ -311,7 +311,7 @@ export const useStore = defineStore("Forum", {
             const comment = post.comments[commentIndex];
             if (comment) {
                 comment.content = "This comment has been deleted";
-                comment.deleted = true; // Add a `deleted` flag to the comment
+                comment.deleted = true; 
 
                 // Update the post in Firestore
                 const docRef = doc(db, "posts", post.id);
@@ -320,6 +320,23 @@ export const useStore = defineStore("Forum", {
                 });
 
                 console.log("Comment deleted successfully.");
+            }
+        },
+
+        async editComment(post: Post, commentIndex: number, newContent: string) {
+            // Update the comment in local storage
+            const comment = post.comments[commentIndex];
+            if (comment) {
+                comment.content = newContent;
+                comment.edited = true;
+
+                // Update the post in Firestore
+                const docRef = doc(db, "posts", post.id);
+                await updateDoc(docRef, {
+                    comments: post.comments,
+                });
+
+                console.log("Comment edited successfully.");
             }
         }
     

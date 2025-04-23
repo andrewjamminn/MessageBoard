@@ -10,6 +10,7 @@ interface Comment {
     author: User;
     content: string;
     deleted?: boolean;
+    edited?: boolean;
 }
 
 interface Post {
