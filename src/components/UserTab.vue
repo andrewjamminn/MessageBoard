@@ -95,6 +95,17 @@ const signIn = async () => {
 }
 
 const signUp = async () => {
+    const usernamePattern = /^[a-z0-9-]{1-25}$/;
+    const passwordPattern = /^[a-zA-Z0-9]{1-25}$/;
+    
+    if (!usernamePattern.test(enteredUser.value)) {
+        errorMsg.value = "Username can only contain lowercase letters, numbers, and hyphens (-). Must be 1-25 characters.";
+        return;
+    }
+    if (!passwordPattern.test(enteredPwd.value)){
+        errorMsg.value = "Password can only contain alphanumeric characters. Must be 1-25 characters.";
+        return;
+    }
     const signupSuccess = await store.createUser(enteredUser.value, enteredPwd.value);
     enteredUser.value = '';
     enteredPwd.value = '';
