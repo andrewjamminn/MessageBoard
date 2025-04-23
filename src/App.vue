@@ -1,6 +1,7 @@
 <template>
   <div id="postcreate">
     <span v-if="store.currentUser!=null" id="title">Create a new post:</span>
+    <span v-else>Log in or sign up to post!</span>
     <NewPost />
   </div>
   <div id="parent" :class="bgColorClass">

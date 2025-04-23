@@ -11,7 +11,7 @@
             <!-- Render the content only if expanded -->
             <div v-if="isExpanded">
                 <h2>{{ post.author.username }} | {{ post.timestamp }}</h2>
-                <h3>{{ post.contents }}</h3>
+                <h3>{{ post.content }}</h3>
             </div>
         </div>
         <div id="comments" v-if="isExpanded">
@@ -71,8 +71,8 @@ type Props = {
 };
 const props = defineProps<Props>();
 
-const newComment = ref("");
-const errorMsg = ref("");
+const newComment = ref('');
+const errorMsg = ref('');
 const isExpanded = ref(true);
 const editingCommentIndex = ref<number | null>(null); // Track which comment is being edited
 const editedComment = ref(""); // Store the edited comment content
@@ -80,14 +80,12 @@ const confirmingDelete = ref<Record<number, boolean>>({}); // Track confirmation
 
 // Post a new comment
 const postComment = async () => {
-    if (store.currentUser !== null) {
-        const commentSuccess = await store.postComment(props.post, newComment.value, store.currentUser);
-        if (commentSuccess === true) {
-            errorMsg.value = "";
-            newComment.value = ""; // Clear input field
-        } else {
+    if (store.currentUser !== null && props.post!==undefined && newComment.value!=='') {
+        await store.postComment(props.post, newComment.value, store.currentUser);
+        errorMsg.value = '';
+        newComment.value = ''; // Clear input field
+    } else {
             errorMsg.value = "Couldn't post message -- field was empty.";
-        }
     }
 };
 

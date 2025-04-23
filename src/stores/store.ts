@@ -9,7 +9,8 @@ import {
     updateDoc,
     setDoc,
     deleteDoc,
-    orderBy
+    orderBy,
+    onSnapshot
 } from "firebase/firestore";
 import { User, Post, Comment } from "../types/forum";
 import bcrypt from 'bcryptjs';
@@ -50,14 +51,12 @@ async function findUser(username: string) {
       const foundUsername = userData.username;
       const foundPassword = userData.password;
       const foundFavcolor = userData.favcolor; // Add this to retrieve favcolor if it exists
-      const foundAdminStatus = userData.admin;
       console.log("Found document:", firstMatch.id);
       return {
         id: foundID,
         username: foundUsername,
         password: foundPassword,
         favcolor: foundFavcolor, // Include favcolor in the returned user object
-        admin: foundAdminStatus
       };
     } catch (error) {
       console.error("Error finding document:", error);
@@ -73,36 +72,70 @@ export const useStore = defineStore("Forum", {
         // Add loading state for better user experience
         isLoading: false,
         error: null as string | null,
+        unsubscribePosts: null as Function | null,
+        unsubscribeUsers: null as Function | null,
     }),
    
     actions: {
+
+        // Set up real-time listeners
+        setupFirestoreListeners() {
+            // Clean up existing listeners if any
+            this.cleanupListeners();
+            
+            // Posts listener
+            const postsRef = collection(db, "posts");
+            const postsQuery = query(postsRef, orderBy("id", "asc"));
+            
+            this.unsubscribePosts = onSnapshot(postsQuery, (snapshot) => {
+                // Handle initial data and updates
+                const updatedPosts = snapshot.docs.map(doc => doc.data() as Post);
+                this.posts = updatedPosts;
+                console.log("Posts updated from Firestore");
+            }, (error) => {
+                console.error("Error listening to posts:", error);
+                this.error = error.message;
+            });
+            // Users listener
+            const usersRef = collection(db, "users");
+            const usersQuery = query(usersRef, orderBy("id", "asc"));
+            
+            this.unsubscribeUsers = onSnapshot(usersQuery, (snapshot) => {
+                // Handle initial data and updates
+                const updatedUsers = snapshot.docs.map(doc => doc.data() as User);
+                this.users = updatedUsers;
+                console.log("Users updated from Firestore");
+            }, (error) => {
+                console.error("Error listening to users:", error);
+                this.error = error.message;
+            });
+        },
+
+        // Clean up listeners to prevent memory leaks
+        cleanupListeners() {
+            if (this.unsubscribePosts) {
+                this.unsubscribePosts();
+                this.unsubscribePosts = null;
+            }
+            
+            if (this.unsubscribeUsers) {
+                this.unsubscribeUsers();
+                this.unsubscribeUsers = null;
+            }
+        },
+
         async init() {
             this.isLoading = true;
             this.error = null;
             try {
-                // Fetch posts collection sorted by id
-                const postsRef = collection(db, "posts");
-                const postsQuery = query(postsRef, orderBy("id", "asc"));
-                const postSnapshot = await getDocs(postsQuery);
-                this.posts = postSnapshot.docs.map(doc => doc.data() as Post);
-                console.log("Successfully fetched post database");
-                
-                // Fetch users collection sorted by id
-                const usersRef = collection(db, "users");
-                const usersQuery = query(usersRef, orderBy("id", "asc"));
-                const userSnapshot = await getDocs(usersQuery);
-                this.users = userSnapshot.docs.map(doc => doc.data() as User);
-                console.log("Successfully fetched registered users");
-                console.log(this.users);
-                //sort the arrays by id
-                sortByID(this.posts, true);
-                sortByID(this.users, true);
-              } catch (error) {
+                // Set up real-time listeners instead of one-time fetches
+                this.setupFirestoreListeners();
+            } catch (error) {
                 console.error("Error initializing store:", error);
-                this.error = error instanceof Error ? error.message : "Unknown error occured";
-              } finally {
+                this.error = error instanceof Error ? error.message : "Unknown error occurred";
+            } finally {
                 this.isLoading = false;
-              }
+            }
         },
         
         async signIn(user: string, password: string) {
@@ -149,7 +182,6 @@ export const useStore = defineStore("Forum", {
                         username: user,
                         password: hashedPassword,
                         favcolor: 'Gray',
-                        admin: false
                     };
                     //add to local storage
                     this.users.push(newUser);
@@ -208,7 +240,7 @@ export const useStore = defineStore("Forum", {
                     id: id,
                     author: author,
                     title: title,
-                    contents: content,
+                    content: content,
                     timestamp: time,
                     comments: []
                 }
@@ -217,7 +249,7 @@ export const useStore = defineStore("Forum", {
                 sortByID(this.posts, true);
                 //add to cloud storage
                 await setDoc(doc(db, "posts", id.toString()), {
-                    id: id.toString(),
+                    id: id,
                     author: author,
                     title: title,
                     contents: content,
@@ -265,23 +297,24 @@ export const useStore = defineStore("Forum", {
                     content: comment
                 }
                 //add to local storage
-                post.comments.push(newComment);
-                sortByID(post.comments, true);
-                //add to cloud storage
-                // Reference to the document
-                const docRef = doc(db, "posts", post.id.toString());
-
-                // Update the document
-                updateDoc(docRef, {
-                    comments: post.comments,
-                })
-                    .then(() => {
-                    console.log("Document successfully updated!");
-                })
-                    .catch((error) => {
-                    console.error("Error updating document: ", error);
-                });
-                return true;
+                    post.comments.push(newComment);
+                    sortByID(post.comments, true);
+                    //add to cloud storage
+                    // Reference to the document
+                    const docRef = doc(db, "posts", post.id.toString());
+    
+                    // Update the document
+                    updateDoc(docRef, {
+                        comments: post.comments,
+                    })
+                        .then(() => {
+                        console.log("Document successfully updated!");
+                        return true;
+                    })
+                        .catch((error) => {
+                        console.error("Error updating document: ", error);
+                        return false;
+                    });
             }
             else {
                 return false;
@@ -290,7 +323,7 @@ export const useStore = defineStore("Forum", {
 
         async confirmEdit(post: Post, newContent: string){
             //update the local storage
-            post.contents = newContent;
+            post.content = newContent;
             //update the cloud storage
             const docRef = doc(db, "posts", post.id.toString());
 

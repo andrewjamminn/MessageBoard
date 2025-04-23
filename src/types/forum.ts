@@ -1,5 +1,4 @@
 interface User {
-    admin: boolean;
     id: number;
     username: string;
     password: string;
@@ -19,7 +18,7 @@ interface Post {
     author: User;
     title: string;
     timestamp: string;
-    contents: string;
+    content: string;
     comments: Comment[]
 }
 

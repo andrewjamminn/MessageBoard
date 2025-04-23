@@ -16,7 +16,7 @@
                 <h2>{{ post.author.username }} | {{ post.timestamp }}</h2>
                 <!--if editing, display contents in textarea-->
                 <h3 v-if="editing">
-                    <textarea id="textbox" maxlength="1000" type="text" v-model="newContent">{{ post.contents }}</textarea>
+                    <textarea id="textbox" maxlength="1000" type="text" v-model="newContent">{{ post.content }}</textarea>
                 </h3>
                 <li v-if="editing">
                     <button @click="confirmEdit">Save</button>
@@ -24,7 +24,7 @@
                 </li>
                 
                 <!--if not editing, display contents normally-->
-                <h3 v-else>{{ post.contents }}</h3>
+                <h3 v-else>{{ post.content }}</h3>
             </div>
         </div>
         <template v-if="isExpanded">
@@ -66,7 +66,7 @@
     const isExpanded = ref(false);
     const editing = ref(false);
     const deleting = ref(false);
-    const newContent = ref(props.post.contents);
+    const newContent = ref(props.post.content);
 
     const toggleContent = () => {
         isExpanded.value = !isExpanded.value;
@@ -87,7 +87,7 @@
         store.confirmEdit(props.post, newContent.value);
     }
     const cancelEdit = () => {
-        newContent.value = props.post.contents;
+        newContent.value = props.post.content;
         editing.value = !editing.value;
     }
     const confirmDelete = () => {
