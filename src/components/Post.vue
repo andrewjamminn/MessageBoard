@@ -39,7 +39,7 @@
                     <h3 v-else>This comment has been deleted.</h3>
                 </div>
                 <!-- Edit and Delete buttons -->
-                <div v-if="comment.author.id === store.currentUser?.id && !comment.deleted">
+                <div v-if="comment.author.id === store.currentUser?.id">
                     <button v-if="!confirmingDelete[index]" @click="confirmDelete(index)">Delete</button>
                     <div v-else>
                         <h3><strong>Are you sure?</strong></h3>
@@ -124,11 +124,7 @@ const cancelDelete = (index: number) => {
 
 // Delete a comment
 const deleteComment = async (index: number) => {
-    const comment = props.comments?.[index];
-    if (comment && comment.author.id === store.currentUser?.id) {
-        await store.deleteComment(props.post, index); // Call the store action to delete the comment
-        confirmingDelete.value[index] = false; // Reset confirmation state
-    }
+    store.deleteComment(props.post, index);
 };
 
 // Toggle post content visibility

@@ -249,7 +249,7 @@ export const useStore = defineStore("Forum", {
                     comments: []
                 }
                 //add to local storage
-                this.posts.push(newPost);
+                //this.posts.push(newPost);
                 sortByID(this.posts, true);
                 //add to cloud storage
                 await setDoc(doc(db, "posts", id.toString()), {
@@ -387,20 +387,7 @@ export const useStore = defineStore("Forum", {
         },
 
         async deleteComment(post: Post, commentIndex: number) {
-            // Mark the comment as deleted in local storage
-            const comment = post.comments[commentIndex];
-            if (comment) {
-                comment.content = "This comment has been deleted";
-                comment.deleted = true; 
-
-                // Update the post in Firestore
-                const docRef = doc(db, "posts", post.id.toString());
-                await updateDoc(docRef, {
-                    comments: post.comments,
-                });
-
-                console.log("Comment deleted successfully.");
-            }
+            post.comments.splice(commentIndex);
         },
 
         async editComment(post: Post, commentIndex: number, newContent: string) {
