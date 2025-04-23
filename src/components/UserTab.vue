@@ -6,7 +6,12 @@
             <input type="text" v-model="enteredUser" placeholder="Username">
         </li>
         <li>
-            <input type="text" v-model="enteredPwd" placeholder="Password">
+            <div class="password-container">
+            <input :type="passwordVisible ? 'text' : 'password'" v-model="enteredPwd" placeholder="Password">
+            <button type="button" class="toggle-password" @click="togglePasswordVisibility">
+                {{ passwordVisible ? 'Hide' : 'Show' }}
+            </button>
+    </div>
         </li>
         <li>
             <button @click="signIn">Sign In</button>
@@ -69,6 +74,7 @@ const enteredUser = ref('');
 const enteredPwd = ref('');
 const errorMsg = ref('');
 const deleting = ref(false);
+const passwordVisible = ref(false);
 
 // When user signs in, set the selected color to their saved favorite
 onMounted(() => {
@@ -135,6 +141,10 @@ const updateFavColor = async () => {
     await store.updateUserFavColor(selected.value);
   }
 }
+
+const togglePasswordVisibility = () => {
+    passwordVisible.value = !passwordVisible.value;
+};
 
 const deleteAccount = () => {
     deleting.value = !deleting.value;
@@ -213,6 +223,24 @@ li {
 .favcolor {
     background: whitesmoke;
     margin: 20px;
+}
+
+.password-container {
+    position: relative;
+    //display: flex;
+    align-items: center;
+}
+
+.toggle-password {
+    margin-left: 5px;
+    padding: 3px 8px;
+    font-size: 0.8em;
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.toggle-password:hover {
+    background-color: #d0d0d0;
 }
 
 </style>
