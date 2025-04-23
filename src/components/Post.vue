@@ -78,15 +78,6 @@ const editingCommentIndex = ref<number | null>(null); // Track which comment is 
 const editedComment = ref(""); // Store the edited comment content
 const confirmingDelete = ref<Record<number, boolean>>({}); // Track confirmation state for each comment
 
-const editTextarea = ref<HTMLTextAreaElement | null>(null);
-
-const adjustTextareaHeight = () => {
-    if (editTextarea.value) {
-        editTextarea.value.style.height = "auto"; // Reset height
-        editTextarea.value.style.height = `${editTextarea.value.scrollHeight}px`; // Set height to match content
-    }
-};
-
 // Post a new comment
 const postComment = async () => {
     if (store.currentUser !== null) {
@@ -104,9 +95,6 @@ const postComment = async () => {
 const editComment = (index: number, content: string) => {
     editingCommentIndex.value = index;
     editedComment.value = content;
-    nextTick(() => {
-        adjustTextareaHeight(); // Adjust height after DOM update
-    });
 };
 
 // Save the edited comment
