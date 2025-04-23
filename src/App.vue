@@ -1,12 +1,4 @@
 <template>
-  <!-- Search bar -->
-  <div id="search">
-    <textarea
-      v-model="searchTerm"
-      placeholder="Search posts by title..."
-      @keydown.enter.prevent
-    ></textarea>
-  </div>
   <div id="postcreate">
     <span v-if="store.currentUser!=null" id="title">Create a new post:</span>
     <NewPost />
@@ -15,6 +7,14 @@
     <div id="feed">
       <!-- iterate through filtered posts -->
       <span id="title">Feed</span>
+      <!-- Search bar -->
+    <div id="search">
+      <textarea
+        v-model="searchTerm"
+        placeholder="Search posts by title..."
+        @keydown.enter.prevent
+    ></textarea>
+  </div>
       <ul>
         <li v-for="post in filteredPosts" :key="post.id">
           <Post :post="post" :comments="post.comments" />
@@ -146,22 +146,18 @@ ul {
 }
 
 #search {
-  margin-bottom: 20px;
+  margin: 10px;
+  display: flex; 
 }
 
 #search textarea {
-  width: 100%;
+  flex: 1;
+  height: 20px; 
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
   resize: none;
-}
-
-#search textarea:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
 </style>
