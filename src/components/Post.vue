@@ -167,6 +167,9 @@ button {
             background-color: #6800b2
         }
 }
+#post {
+    word-wrap: break-word;
+}
 #box {
     background-color: #d1d1d1;
     margin: 10px;
@@ -188,6 +191,7 @@ button {
     margin-left: 30px;
     padding:10px;
     border: 5px solid whitesmoke;
+    word-wrap: break-word;
 }
 #expand {
     background-color: transparent;

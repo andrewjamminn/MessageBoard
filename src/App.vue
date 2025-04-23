@@ -138,15 +138,13 @@ ul {
   background: whitesmoke
 }
 #user {
-  width: 25%;
-  flex: 5;
+  width: 40%;
   margin: 20px;
   padding: 15px;
   background: whitesmoke
 }
 #feed {
-  flex: 7;
-  width: 75%;
+  width: 60%;
   margin: 20px;
   padding: 15px;
   background: whitesmoke

@@ -23,7 +23,8 @@
 
     <li>
         <button @click="logOut">Log out</button>
-        <button @click="deleteAccount">Delete Account</button>
+        <!--admin does not get to delete account-->
+        <button v-if="store.currentUser.username!=='admin'" @click="deleteAccount">Delete Account</button>
     </li>
     <li v-if="deleting">
         <h3>Are you sure?</h3>
