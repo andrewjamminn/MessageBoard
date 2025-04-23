@@ -34,7 +34,7 @@
                 </h2>
                 <!-- Render comment contents -->
                 <div v-if="editingCommentIndex === index">
-                    <textarea v-model="editedComment" maxlength="150"></textarea>
+                    <textarea id="editcomment" v-model="editedComment" maxlength="150"></textarea>
                     <button @click="saveComment(index)">Save</button>
                     <button @click="cancelEdit">Cancel</button>
                 </div>
@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, nextTick } from "vue";
 import { Post, Comment } from "../types/forum.ts";
 import { useStore } from "../stores/store.ts";
 
@@ -77,6 +77,15 @@ const isExpanded = ref(false);
 const editingCommentIndex = ref<number | null>(null); // Track which comment is being edited
 const editedComment = ref(""); // Store the edited comment content
 const confirmingDelete = ref<Record<number, boolean>>({}); // Track confirmation state for each comment
+
+const editTextarea = ref<HTMLTextAreaElement | null>(null);
+
+const adjustTextareaHeight = () => {
+    if (editTextarea.value) {
+        editTextarea.value.style.height = "auto"; // Reset height
+        editTextarea.value.style.height = `${editTextarea.value.scrollHeight}px`; // Set height to match content
+    }
+};
 
 // Post a new comment
 const postComment = async () => {
@@ -95,6 +104,9 @@ const postComment = async () => {
 const editComment = (index: number, content: string) => {
     editingCommentIndex.value = index;
     editedComment.value = content;
+    nextTick(() => {
+        adjustTextareaHeight(); // Adjust height after DOM update
+    });
 };
 
 // Save the edited comment
@@ -195,5 +207,17 @@ button {
     background-color: transparent;
     color:#4b0082;
     
+}
+#editcomment {
+    width: 80%; 
+    height: auto; 
+    padding: 5px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: none; 
+    overflow-y: auto; 
+    white-space: pre-wrap; 
+    word-wrap: break-word; 
 }
 </style>
